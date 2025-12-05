@@ -14,4 +14,7 @@ gleam run
 
 # Send a request to the server
 curl -X POST -d 'Hello, Gleam!' http://localhost:3000/echo
+
+# Deploy to Hetzner
+https://gleam.run/deployment/linux-server/
 ```
