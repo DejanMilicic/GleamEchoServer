@@ -13,7 +13,7 @@ More importantly it's also an example web application written in the
 gleam run
 
 # Send a request to the server
-curl -X POST -d 'Hello, Gleam!' http://localhost:3000/echo
+curl -X POST -d 'Hello, Gleam!' http://localhost:8000/echo
 
 # Deploy to Hetzner
 https://gleam.run/deployment/linux-server/

@@ -13,7 +13,7 @@ pub fn main() {
   let port =
     envoy.get("PORT")
     |> result.then(int.parse)
-    |> result.unwrap(3000)
+    |> result.unwrap(8000)
 
   let secret_key_base = wisp.random_string(64)
 
@@ -21,6 +21,7 @@ pub fn main() {
   let assert Ok(_) =
     wisp_mist.handler(router.handle_request, secret_key_base)
     |> mist.new
+    |> mist.bind("0.0.0.0")
     |> mist.port(port)
     |> mist.start_http
 
