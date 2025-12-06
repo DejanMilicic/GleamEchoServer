@@ -12,7 +12,7 @@ pub fn not_found_test() {
 
   response
   |> testing.string_body
-  |> should.equal("There's nothing to see here. Try POSTing to /echo")
+  |> should.equal("There's nothing NEW to see here. Try POSTing to /echo")
 }
 
 pub fn hello_nubi_test() {

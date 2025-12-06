@@ -287,17 +287,12 @@ After=local-fs.target
 
 [Container]
 Image=ghcr.io/[LOWERCASED_GITHUB_USERNAME]/[LOWERCASED_REPO_NAME]:latest
+PublishPort=8000:8000
 AutoUpdate=registry
 
-# Expose the port the app is listening on
-PublishPort=8000:8000
-
-# Restart the service if the health check fails
-HealthCmd=sh -c /app/healthcheck.sh
-HealthInterval=30s
-HealthTimeout=5s
-HealthRetries=3
-HealthOnFailure=restart
+[Service]
+Restart=on-failure
+RestartSec=10
 
 [Install]
 WantedBy=multi-user.target default.target
@@ -305,11 +300,35 @@ WantedBy=multi-user.target default.target
 
 `AutoUpdate=registry` will instruct podman to periodically check for new version of container. 
 
-Alternatively, you can manually pull new version of a container
+To set up interval for automatic checks
+
+```
+systemctl edit podman-auto-update.timer
+```
+
+Add section
+
+```
+[Timer]
+OnCalendar=*:0/3
+```
+
+this will check every 3 minutes for new version of container.
+
+To reload this configuration, execute
+
+```
+systemctl daemon-reload
+systemctl restart podman-auto-update.timer
+```
+
+Alternatively, you can manually pull new version of a container anytime you like
 
 ```
 podman auto-update
 ```
+
+
 
 systemctl daemon-reload
 systemctl enable podman-auto-update.timer
