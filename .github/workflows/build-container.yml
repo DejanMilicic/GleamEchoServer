@@ -19,9 +19,18 @@ jobs:
       - name: Log in to registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
+    #   - name: Push image
+    #     run: |
+    #       IMAGE_ID=ghcr.io/dejanmilicic/gleamechoserver
+    #       TAG="$IMAGE_ID":$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+    #       docker tag webapp "$TAG"
+    #       docker push "$TAG"
+
       - name: Push image
         run: |
           IMAGE_ID=ghcr.io/dejanmilicic/gleamechoserver
-          TAG="$IMAGE_ID":$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          docker tag webapp "$TAG"
-          docker push "$TAG"
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          docker tag webapp "$IMAGE_ID:$VERSION"
+          docker tag webapp "$IMAGE_ID:latest"
+          docker push "$IMAGE_ID:$VERSION"
+          docker push "$IMAGE_ID:latest"
