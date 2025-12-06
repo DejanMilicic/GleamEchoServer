@@ -58,5 +58,5 @@ pub fn hello(name) {
 pub fn not_found() {
   wisp.not_found()
   |> wisp.set_header("content-type", "text/plain")
-  |> wisp.string_body("There's nothing here. Try POSTing to /echo")
+  |> wisp.string_body("There's nothing to see here. Try POSTing to /echo")
 }

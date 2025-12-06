@@ -235,7 +235,7 @@ jobs:
 
       - name: Push image
         run: |
-          IMAGE_ID=ghcr.io/[LOWERCASED_GITHUB_ACCOUNT]/[LOWERCASED_REPO]
+          IMAGE_ID=ghcr.io/[LOWERCASED_GITHUB_USERNAME]/[LOWERCASED_REPO_NAME]
           TAG="$IMAGE_ID":$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           docker tag webapp "$TAG"
           docker push "$TAG"
@@ -250,6 +250,70 @@ git tag v_test
 git push --tags
 ```
 
+## Prepare host for your application
+
+1. Install Caddy
+
+```
+apt install --yes caddy
+```
+
+2. Install Podman
+
+```
+apt install --yes podman
+```
+
+3. Define your Podman container
+
+If you are using a private GitHub repository you will need create a GitHub personal access token with `read:packages` permissions in the GitHub security settings, and then use it to log in on the server.
+
+```
+echo "YOUR_GITHUB_PAT" | podman login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
+```
+
+Create a Podman systemd container file
+
+```
+nano /etc/containers/systemd/webapp.container
+```
+
+with these contents
+
+````yaml
+[Unit]
+Description=My Gleam web application
+After=local-fs.target
+
+[Container]
+Image=ghcr.io/[LOWERCASED_GITHUB_USERNAME]/[LOWERCASED_REPO_NAME]:latest
+AutoUpdate=registry
+
+# Expose the port the app is listening on
+PublishPort=8000:8000
+
+# Restart the service if the health check fails
+HealthCmd=sh -c /app/healthcheck.sh
+HealthInterval=30s
+HealthTimeout=5s
+HealthRetries=3
+HealthOnFailure=restart
+
+[Install]
+WantedBy=multi-user.target default.target
+````
+
+`AutoUpdate=registry` will instruct podman to periodically check for new version of container. 
+
+Alternatively, you can manually pull new version of a container
+
+```
+podman auto-update
+```
+
+systemctl daemon-reload
+systemctl enable podman-auto-update.timer
+systemctl start podman-auto-update.timer
 
 ===
 
